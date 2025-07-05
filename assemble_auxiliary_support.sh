@@ -4,7 +4,7 @@ set -euo pipefail
 mkdir -p generated
 cat << EOF >> generated/start_auxiliary_services.sh
 #!/usr/bin/env bash
-set -euxo pipefail
+set -euo pipefail
 source local_port.sh
 EOF
 

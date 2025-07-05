@@ -19,3 +19,5 @@ if [[ $(shasum -a 512 clang+llvm-20.1.7-arm64-apple-darwin21.0.tar.xz) != "35780
 fi
 tar -xf clang+llvm-20.1.7-arm64-apple-darwin21.0.tar.xz
 sudo cp -r clang+llvm-20.1.7-arm64-apple-darwin21.0/* /usr/local/
+sudo ln -s $(which clang++) $(which clang++)-20
+sudo xcode-select --switch /Applications/Xcode_16.4.app

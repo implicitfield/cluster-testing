@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -euxo pipefail
+set -euo pipefail
 
 STUN_OUTPUT="$(stun stun.l.google.com:19302 -v -p 1024 1 2>&1)"
 sudo mkdir -p /etc/wireguard

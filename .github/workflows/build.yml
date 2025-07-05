@@ -23,5 +23,5 @@ jobs:
     secrets: inherit
     with:
       arch: "arm64"
-      os:  "macos-14"
+      os:  "macos-15"
       auxiliary_count: "1"

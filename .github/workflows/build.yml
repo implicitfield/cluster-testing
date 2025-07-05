@@ -1,0 +1,27 @@
+name: Build, package and release clang+llvm
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: write
+
+jobs:
+  Auxiliary:
+    strategy:
+      matrix:
+        instance: [0]
+      fail-fast: true
+    uses: ./.github/workflows/auxiliary.yml
+    secrets: inherit
+  Primary:
+    strategy:
+      fail-fast: true
+    uses: ./.github/workflows/primary.yml
+    secrets: inherit
+    with:
+      arch: "arm64"
+      os:  "macos-14"
+      auxiliary_count: "1"

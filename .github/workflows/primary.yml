@@ -1,0 +1,51 @@
+name: Build, package and release clang+llvm
+
+on:
+  workflow_call:
+    inputs:
+      arch:
+        required: true
+        type: string
+      os:
+        required: true
+        type: string
+      auxiliary_count:
+        required: true
+        type: string
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
+  PRIMARY_PRIVATE_KEY: ${{ secrets.PRIMARY_PRIVATE_KEY }}
+  INSTANCE_0_PUBLIC_KEY: ${{ secrets.INSTANCE_0_PUBLIC_KEY }}
+  FULL_REPOSITORY_NAME: ${{ github.repository }}
+  RUN_ID: ${{ github.run_id }}
+
+jobs:
+  build:
+    name: Intialize and drive the cluster
+    runs-on: ${{ inputs.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        name: Clone repository
+      - name: Install dependencies
+        run: ./install_primary_dependencies.sh
+      - name: Initialize services
+        run: ./start_primary_services.sh
+      - name: Advertise public IP address
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrimaryIP
+          path: PrimaryIP.txt
+      - name: Connect with auxiliary runners
+        run: ./wait.sh ${{ inputs.auxiliary_count }}
+      - name: Fetch resources
+        run: ./initialize.sh
+      - name: Build
+        run: ./build.sh
+      - name: Upload build directory
+        uses: actions/upload-artifact@v4
+        with:
+          name: LLVM-20.1.7
+          path: LLVM-20.1.7.tar.xz

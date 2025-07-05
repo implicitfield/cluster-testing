@@ -1,6 +1,13 @@
 name: distcc runner
 on:
   workflow_call:
+    inputs:
+      job-index:
+        required: true
+        type: string
+      job-total:
+        required: true
+        type: string
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -24,15 +31,15 @@ jobs:
       - name: Install dependencies
         run: ./install_auxiliary_dependencies.sh
       - name: Preprocess the auxiliary service initialization script
-        run: ./assemble_auxiliary_support.sh ${{ strategy.job-index }} ${{ strategy.job-total }}
+        run: ./assemble_auxiliary_support.sh ${{ inputs.job-index }} ${{ inputs.job-total }}
       - name: Initialize services
-        run: ./generated/start_auxiliary_services.sh ${{ strategy.job-index }}
+        run: ./generated/start_auxiliary_services.sh ${{ inputs.job-index }}
       - name: Advertise public IP address
         uses: actions/upload-artifact@v4
         with:
-          name: Auxiliary${{ strategy.job-index }}IP
-          path: Auxiliary${{ strategy.job-index }}IP.txt
+          name: Auxiliary${{ inputs.job-index }}IP
+          path: Auxiliary${{ inputs.job-index }}IP.txt
       - name: Connect to the primary runner
-        run: ./connect.sh ${{ strategy.job-total }}
+        run: ./connect.sh ${{ inputs.job-total }}
       - name: Wait for release
         run: ./stall.sh

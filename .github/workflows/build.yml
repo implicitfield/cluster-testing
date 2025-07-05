@@ -16,6 +16,9 @@ jobs:
       fail-fast: true
     uses: ./.github/workflows/auxiliary.yml
     secrets: inherit
+    with:
+      job-index: ${{ strategy.job-index }}
+      job-total: ${{ strategy.job-total }}
   Primary:
     strategy:
       fail-fast: true

@@ -18,6 +18,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Clone repository
+      - name: Choose a local port to use
+        run: echo "export LOCAL_PORT=$(( 20000 + $RANDOM % 10000 ))" > local_port.sh
       - name: Install dependencies
         run: ./install_auxiliary_dependencies.sh
       - name: Preprocess the auxiliary service initialization script

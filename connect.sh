@@ -35,8 +35,9 @@ echo "${JSON}" | jq -c '.artifacts.[]' | while read entry; do
   fi
 done
 
-# Wait to make sure that the server is reachable.
-sleep 7
+# Wait until the primary server has had a change to ping us (> 10s),
+# since we won't be able to connect to it before that.
+sleep 15
 
 # Try to connect
 sudo wg-quick up wg0

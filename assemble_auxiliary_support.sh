@@ -21,7 +21,7 @@ sudo rm -f /etc/wireguard/wg0.conf
 # Local source port
 export PORT=$(( 20000 + $RANDOM % 10000 ))
 cat wg0-auxiliary.conf | perl -pe 's/PRIVATE_KEY/$ENV{PRIVATE_KEY}/' | perl -pe 's/LOCAL_PORT/$ENV{PORT}/' | perl -pe 's/PRIMARY_PUBLIC_KEY/$ENV{PRIMARY_PUBLIC_KEY}/' | sudo tee /etc/wireguard/wg0.conf
-distccd --daemon --allow-private
+PATH=/usr/lib/llvm-20/bin:$PATH distccd --daemon --allow-private
 IP=$(dig +short txt ch whoami.cloudflare @1.0.0.1 | sed 's/"//g')
 # See start_primary_services.sh
 echo "::add-mask::$IP"

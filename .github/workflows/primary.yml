@@ -18,6 +18,7 @@ env:
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
   PRIMARY_PRIVATE_KEY: ${{ secrets.PRIMARY_PRIVATE_KEY }}
   INSTANCE_0_PUBLIC_KEY: ${{ secrets.INSTANCE_0_PUBLIC_KEY }}
+  INSTANCE_1_PUBLIC_KEY: ${{ secrets.INSTANCE_1_PUBLIC_KEY }}
   FULL_REPOSITORY_NAME: ${{ github.repository }}
   RUN_ID: ${{ github.run_id }}
 

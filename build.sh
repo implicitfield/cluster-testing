@@ -5,7 +5,7 @@ set -euo pipefail
 export TARGET="$(clang -v 2>&1 | grep 'Target:' | cut -d ' ' -f2)"
 export CC="distcc clang-20 -target $TARGET"
 export CXX="distcc clang++-20 -target $TARGET"
-export DISTCC_HOSTS="localhost/4 192.168.166.2/5"
+export DISTCC_HOSTS="localhost/4 192.168.166.2/5 192.168.166.3/5"
 export SDKROOT="$(xcrun --show-sdk-path)"
 cd llvm-project
 patch -p1 < ../clang-actually-disable-pedantic.patch
@@ -22,7 +22,7 @@ cmake -G Ninja \
         -DLLVM_ENABLE_RUNTIMES="compiler-rt;libcxx;libcxxabi;libunwind" \
         -DLLVM_ENABLE_PEDANTIC=OFF \
         llvm
-ninja -j18
+ninja -j28
 mkdir LLVM-20.1.7
 DESTDIR=$PWD/LLVM-20.1.7 ninja install
 tar -cf - LLVM-20.1.7 | xz -9 -T$(sysctl -n hw.logicalcpu) > LLVM-20.1.7.tar.xz

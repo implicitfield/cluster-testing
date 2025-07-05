@@ -5,6 +5,7 @@ set -euo pipefail
 export CC="distcc clang -target arm64-apple-darwin24.5.0"
 export CXX="distcc clang++ -target arm64-apple-darwin24.5.0"
 export DISTCC_HOSTS="localhost/6 10.0.0.2/8"
+export SDKROOT="$(xcrun --show-sdk-path)"
 cd llvm-project
 cmake -G Ninja \
         -DCMAKE_BUILD_TYPE=Release \

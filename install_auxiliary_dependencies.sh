@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-sudo apt-get install nmap wireguard distcc
+sudo apt-get install nmap wireguard distcc stun-client
 cat << EOF | sudo tee -a /etc/apt/sources.list
 deb http://apt.llvm.org/noble/ llvm-toolchain-noble main
 deb-src http://apt.llvm.org/noble/ llvm-toolchain-noble main

@@ -13,8 +13,6 @@ env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
   PRIMARY_PUBLIC_KEY: ${{ secrets.PRIMARY_PUBLIC_KEY }}
-  INSTANCE_0_PRIVATE_KEY: ${{ secrets.INSTANCE_0_PRIVATE_KEY }}
-  INSTANCE_1_PRIVATE_KEY: ${{ secrets.INSTANCE_1_PRIVATE_KEY }}
   FULL_REPOSITORY_NAME: ${{ github.repository }}
   RUN_ID: ${{ github.run_id }}
   RUN_ATTEMPT: ${{ github.run_attempt }}
@@ -31,10 +29,13 @@ jobs:
         run: echo "export LOCAL_PORT=$(( 20000 + $RANDOM % 10000 ))" > local_port.sh
       - name: Install dependencies
         run: ./install_auxiliary_dependencies.sh
-      - name: Preprocess the auxiliary service initialization script
-        run: ./assemble_auxiliary_support.sh ${{ inputs.job-index }} ${{ inputs.job-total }}
       - name: Initialize services
-        run: ./generated/start_auxiliary_services.sh ${{ inputs.job-index }}
+        run: ./start_auxiliary_services.sh ${{ inputs.job-index }}
+      - name: Publicize public key
+        uses: actions/upload-artifact@v4
+        with:
+          name: Auxiliary${{ inputs.job-index }}PubKey
+          path: Auxiliary${{ inputs.job-index }}PubKey.txt
       - name: Advertise public IP address
         uses: actions/upload-artifact@v4
         with:

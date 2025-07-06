@@ -1,35 +1,28 @@
 #!/usr/bin/env bash
+
+# WARNING: Do not add -x (or similar) here, or you'll leak the generated private key.
 set -euo pipefail
 
-mkdir -p generated
-cat << EOF >> generated/start_auxiliary_services.sh
-#!/usr/bin/env bash
-set -euo pipefail
 source common.sh
 source local_port.sh
-EOF
 
-for i in $(seq 0 $2); do
-cat << EOF >> generated/start_auxiliary_services.sh
-if [[ "\$1" -eq $i ]]; then
-  export PRIVATE_KEY=\$INSTANCE_${i}_PRIVATE_KEY
-fi
-EOF
-done
-
-# NOTE: Placing the EOF in quotes prevents variable expansion.
-cat << 'EOF' >> generated/start_auxiliary_services.sh
 sudo mkdir -p /etc/wireguard
 sudo rm -f /etc/wireguard/wg0.conf
 
 export IP_ON_PRIMARY="192.168.166.$((2 + $1))"
+
+export PRIVATE_KEY="$(wg genkey)"
+echo "$PRIVATE_KEY" | wg pubkey | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}PubKey.txt" -k "${ENCRYPTION_KEY}"
 
 cat wg0-auxiliary.conf | \
   perl -pe 's/PRIVATE_KEY/$ENV{PRIVATE_KEY}/' | \
   perl -pe 's/LOCAL_PORT/$ENV{LOCAL_PORT}/' | \
   perl -pe 's/PRIMARY_PUBLIC_KEY/$ENV{PRIMARY_PUBLIC_KEY}/' | \
   perl -pe 's/IP_ON_PRIMARY/$ENV{IP_ON_PRIMARY}/' | \
-  sudo tee /etc/wireguard/wg0.conf
+  sudo tee > /dev/null /etc/wireguard/wg0.conf
+
+rm wg0-auxiliary.conf
+sudo chmod 600 /etc/wireguard/wg0.conf
 
 export DISTCC_CMDLIST=$PWD/DISTCC_CMDLIST
 distccd --daemon --allow-private --verbose --log-file $HOME/distccd.log
@@ -45,7 +38,3 @@ OUTPORT=$(echo "$STUN_OUTPUT" | awk '/MappedAddress/ {print $3; exit}' | cut -d 
 # Start hole punching to keep the mapping active
 sudo nping --udp --ttl 4 --no-capture --source-port $LOCAL_PORT --count 60 --delay 10s --dest-port 1024 3.3.3.3 &
 echo $IP:$OUTPORT:$LOCAL_PORT | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}IP.txt" -k "${ENCRYPTION_KEY}"
-EOF
-
-chmod +x generated/start_auxiliary_services.sh
-cat generated/start_auxiliary_services.sh

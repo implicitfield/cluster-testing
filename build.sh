@@ -3,8 +3,6 @@
 set -euo pipefail
 
 export TARGET="$(clang -v 2>&1 | grep 'Target:' | cut -d ' ' -f2)"
-export CC="distcc clang-20 -target $TARGET"
-export CXX="distcc clang++-20 -target $TARGET"
 export DISTCC_HOSTS="localhost/4 192.168.166.2/5 192.168.166.3/5"
 export SDKROOT="$(xcrun --show-sdk-path)"
 cd llvm-project

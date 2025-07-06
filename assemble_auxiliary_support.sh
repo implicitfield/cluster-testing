@@ -31,7 +31,7 @@ cat wg0-auxiliary.conf | \
   perl -pe 's/IP_ON_PRIMARY/$ENV{IP_ON_PRIMARY}/' | \
   sudo tee /etc/wireguard/wg0.conf
 
-PATH=/usr/lib/llvm-20/bin:$PATH distccd --daemon --allow-private
+distccd --daemon --allow-private
 
 IP=$(dig +short txt ch whoami.cloudflare @1.0.0.1 | sed 's/"//g')
 # See start_primary_services.sh

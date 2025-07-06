@@ -29,7 +29,7 @@ for i in $(seq 0 $(($1 - 1))); do
       PORT=$(echo $IPINFO | cut -d ':' -f2)
       # Perform the hole punch.
       # TTL is set to 4 to avoid actually delivering the packet all the way (while still being high enough to hole punch).
-      sudo nping --udp --ttl 4 --no-capture --source-port 1024 --count 60 --delay 10s --dest-port $PORT $IP &
+      sudo nping --udp --ttl 4 --no-capture --source-port 1024 --delay 10s --dest-port $PORT $IP &
       until [[ $(($OLD_CONNECTIONS + 1)) -eq $CONNECTIONS ]]; do
         sudo wg show
         sleep 1

@@ -45,12 +45,10 @@ jobs:
         run: ./sync_pause.sh ${{ inputs.auxiliary_count }}
       - name: Connect with auxiliary runners
         run: ./wait.sh ${{ inputs.auxiliary_count }}
-      - name: Fetch resources
-        run: ./initialize.sh
       - name: Build
-        run: ./build.sh ${{ inputs.auxiliary_count }}
+        run: ./build_chromium.sh ${{ inputs.auxiliary_count }}
       - name: Upload build directory
         uses: actions/upload-artifact@v4
         with:
-          name: LLVM-20.1.7
-          path: LLVM-20.1.7.tar.xz
+          name: ungoogled-chromium
+          path: ungoogled-chromium.dmg

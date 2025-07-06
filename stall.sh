@@ -5,7 +5,7 @@ source common.sh
 
 function exit_if_released {
   while read entry; do
-    if [[ $(echo "${entry}" | jq ".name" | sed 's/"//g') == "LLVM-20.1.7" ]]; then
+    if [[ $(echo "${entry}" | jq ".name" | sed 's/"//g') == "ungoogled-chromium" ]]; then
       exit 0
     fi
   done <<< $(echo "${JSON}" | jq -c '.artifacts.[]')

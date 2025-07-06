@@ -1,5 +1,5 @@
 #!/bin/bash
-brew install wireguard-go wireguard-tools nmap distcc
+brew install wireguard-go wireguard-tools nmap distcc gnu-sed coreutils
 
 # stund isn't (understandably) in homebrew, because it doesn't build on macOS as-is.
 curl -OL 'https://downloads.sourceforge.net/project/stun/stun/0.97/stund-0.97.tgz'

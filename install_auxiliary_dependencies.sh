@@ -16,3 +16,5 @@ EOF
 wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | sudo apt-key add -
 sudo apt-get update
 sudo apt-get install clang-20 llvm-20 lld-20
+sudo ln -s /usr/bin/clang-20 /usr/local/bin/clang-20
+sudo ln -s /usr/bin/clang++-20 /usr/local/bin/clang++-20

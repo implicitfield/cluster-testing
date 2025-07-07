@@ -44,7 +44,7 @@ jobs:
       - name: Fetch resources
         run: ./initialize.sh
       - name: Build
-        run: ./build.sh
+        run: ./build.sh ${{ inputs.auxiliary_count }}
       - name: Upload build directory
         uses: actions/upload-artifact@v4
         with:

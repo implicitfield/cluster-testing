@@ -11,8 +11,10 @@ function exit_if_released {
   done
 }
 
+tail -f $HOME/distccd.log &
+
 while true; do
-  fetch_json
+  fetch_json 2>/dev/null
   exit_if_released
   sleep 60
 done

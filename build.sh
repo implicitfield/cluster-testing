@@ -23,4 +23,4 @@ cmake -G Ninja \
 ninja -j28
 mkdir LLVM-20.1.7
 DESTDIR=$PWD/LLVM-20.1.7 ninja install
-tar -cf - LLVM-20.1.7 | xz -9 -T$(sysctl -n hw.logicalcpu) > LLVM-20.1.7.tar.xz
+tar -cf - LLVM-20.1.7 | xz -9 -T$(sysctl -n hw.logicalcpu) > ../LLVM-20.1.7.tar.xz

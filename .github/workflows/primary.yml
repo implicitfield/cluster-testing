@@ -32,6 +32,8 @@ jobs:
         run: sudo mdutil -a -i off
       - name: Install dependencies
         run: ./install_primary_dependencies.sh
+      - name: Start freeing up storage
+        run: ./free_storage.sh &
       - name: Initialize services
         run: ./start_primary_services.sh
       - name: Advertise public IP address

@@ -14,7 +14,7 @@ function fetch_jobs_json {
 
 if [[ "$1" -eq 0 ]]; then
   TARGET_WORKFLOW="Primary"
-  TARGET_JOB="Advertise public IP address"
+  TARGET_JOB="Wait for auxiliary runners"
 else
   TARGET_WORKFLOW="Auxiliary ($(($1 - 1)))"
   TARGET_JOB="Connect to the primary runner"

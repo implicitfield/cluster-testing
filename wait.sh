@@ -3,13 +3,7 @@
 set -euxo pipefail
 source common.sh
 
-# Wait for auxiliary runners to come online (if they haven't already done so).
-TARGET=$((($1 * 2) + 1))
 fetch_json
-until [[ $(echo "${JSON}" | jq '.total_count') -eq $TARGET ]]; do
-  sleep 2
-  fetch_json
-done
 
 function get_artifact_id {
   while read entry; do

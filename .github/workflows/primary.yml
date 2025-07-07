@@ -37,6 +37,8 @@ jobs:
         with:
           name: PrimaryIP
           path: PrimaryIP.txt
+      - name: Wait for auxiliary runners
+        run: ./sync_pause.sh ${{ inputs.auxiliary_count }}
       - name: Connect with auxiliary runners
         run: ./wait.sh ${{ inputs.auxiliary_count }}
       - name: Fetch resources

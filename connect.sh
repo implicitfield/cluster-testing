@@ -57,7 +57,6 @@ echo "${JSON}" | jq -c '.artifacts.[]' | while read entry; do
     PORT=$(echo "$IPINFO" | cut -d ':' -f2)
     sudo sed "s/PRIMARY_IP/$IP/" -i /etc/wireguard/wg0.conf
     sudo sed "s/PRIMARY_EXTERNAL_PORT/$PORT/" -i /etc/wireguard/wg0.conf
-    sudo nping --udp --ttl 4 --no-capture --source-port $LOCAL_PORT --count 10 --delay 10s --dest-port $PORT $IP &
   fi
 done
 

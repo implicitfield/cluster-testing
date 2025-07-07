@@ -10,6 +10,9 @@ cd ungoogled-chromium-macos
 git submodule init
 git submodule update
 
+cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
+echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
+
 export DISTCC_HOSTS="localhost/4"
 for i in $(seq 1 $1); do
   export DISTCC_HOSTS="$DISTCC_HOSTS 192.168.166.$(($i + 1))/5"

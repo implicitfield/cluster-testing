@@ -36,5 +36,5 @@ STUN_OUTPUT="$(stun stun.l.google.com:19302 -v -p $LOCAL_PORT 1 2>&1)"
 OUTPORT=$(echo "$STUN_OUTPUT" | awk '/MappedAddress/ {print $3; exit}' | cut -d ':' -f2)
 
 # Start hole punching to keep the mapping active
-sudo nping --udp --ttl 4 --no-capture --source-port $LOCAL_PORT --count 60 --delay 10s --dest-port 1024 3.3.3.3 &
+sudo nping -v-2 --udp --ttl 4 --no-capture --source-port $LOCAL_PORT --count 60 --delay 10s --dest-port 1024 3.3.3.3 &
 echo $IP:$OUTPORT:$LOCAL_PORT | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}IP.txt" -k "${ENCRYPTION_KEY}"

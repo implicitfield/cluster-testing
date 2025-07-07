@@ -28,6 +28,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Clone repository
+      - name: Disable Spotlight
+        run: sudo mdutil -a -i off
       - name: Install dependencies
         run: ./install_primary_dependencies.sh
       - name: Initialize services

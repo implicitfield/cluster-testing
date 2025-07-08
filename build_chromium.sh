@@ -11,7 +11,9 @@ git submodule init
 git submodule update
 
 cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
+cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
 echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
+echo "ungoogled-chromium/macos/disable-wgnu-line-marker.patch" >> patches/series
 
 export DISTCC_HOSTS="localhost/4"
 for i in $(seq 1 $1); do

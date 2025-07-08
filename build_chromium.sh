@@ -28,6 +28,7 @@ cc_wrapper = "env DISTCC_HOSTS='$DISTCC_HOSTS' distcc"
 enable_stripping = false
 enable_dsyms = false
 swift_whole_module_optimization = 0
+use_thin_lto = false
 EOF
 
 JOBS=$(((4 + ($1 * 5)) * 2))

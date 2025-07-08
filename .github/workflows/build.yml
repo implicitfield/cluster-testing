@@ -12,7 +12,7 @@ jobs:
   Auxiliary:
     strategy:
       matrix:
-        instance: [0, 1, 2, 3, 4]
+        instance: [0, 1, 2, 3, 4, 5, 6, 7, 8]
       fail-fast: true
     uses: ./.github/workflows/auxiliary.yml
     secrets: inherit
@@ -27,4 +27,4 @@ jobs:
     with:
       arch: "arm64"
       os:  "macos-15"
-      auxiliary_count: "5"
+      auxiliary_count: "9"

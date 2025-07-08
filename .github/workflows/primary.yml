@@ -16,7 +16,6 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   ENCRYPTION_KEY: ${{ secrets.ENCRYPTION_KEY }}
-  PRIMARY_PRIVATE_KEY: ${{ secrets.PRIMARY_PRIVATE_KEY }}
   FULL_REPOSITORY_NAME: ${{ github.repository }}
   RUN_ID: ${{ github.run_id }}
 
@@ -36,6 +35,11 @@ jobs:
         run: ./free_storage.sh &
       - name: Initialize services
         run: ./start_primary_services.sh
+      - name: Publicize public key
+        uses: actions/upload-artifact@v4
+        with:
+          name: PrimaryPubKey
+          path: PrimaryPubKey.txt
       - name: Advertise public IP address
         uses: actions/upload-artifact@v4
         with:

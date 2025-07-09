@@ -10,6 +10,11 @@ cd ungoogled-chromium-macos
 git submodule init
 git submodule update
 
+cd ungoogled-chromium
+git fetch origin pull/3384/head
+git checkout FETCH_HEAD
+cd ..
+
 cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
 cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
 echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series

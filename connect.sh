@@ -64,4 +64,5 @@ sudo PRIMARY_PUBLIC_KEY="$PRIMARY_PUBLIC_KEY" perl -pe 's/PRIMARY_PUBLIC_KEY/$EN
 sleep 15
 
 # Try to connect
+sudo killall nping
 sudo wg-quick up wg0

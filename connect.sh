@@ -66,3 +66,21 @@ sleep 15
 # Try to connect
 sudo killall nping
 sudo wg-quick up wg0
+
+sleep 5
+
+# Keep retrying until we manage to perform a handshake (within a reasonable amount of time).
+recheck_connections
+CONNECTION_ATTEMPTS=1
+until [[ $CONNECTIONS -eq 1 ]]; do
+  echo "Failed to connect, retrying..."
+  CONNECTION_ATTEMPTS=$(($CONNECTION_ATTEMPTS + 1))
+  sudo wg-quick down wg0
+  sudo wg-quick up wg0
+  sleep 10
+  recheck_connections
+  if [[ $CONNECTION_ATTEMPTS -eq 10 && $CONNECTIONS -eq 0 ]]; then
+    echo "Failed to connect after $CONNECTION_ATTEMPTS tries, exiting"
+    exit 1
+  fi
+done

@@ -13,3 +13,4 @@ IP=$(dig +short txt ch whoami.cloudflare @1.0.0.1 | sed 's/"//g')
 echo "::add-mask::$IP"
 OUTPORT=$(echo "$STUN_OUTPUT" | awk '/MappedAddress/ {print $3; exit}' | cut -d ':' -f2)
 echo "$IP:$OUTPORT:1024" | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out PrimaryIP.txt -pass env:ENCRYPTION_KEY
+sudo nping -v-2 --udp --ttl 4 --no-capture --source-port 1024 --count 60 --delay 10s --dest-port 1024 3.3.3.3 &

@@ -26,6 +26,8 @@ sudo cp wg0-primary.conf /etc/wireguard/wg0.conf
 rm wg0-primary.conf
 sudo chmod 600 /etc/wireguard/wg0.conf
 
+sudo killall nping
+
 sudo wg-quick up wg0
 
 # Start NAT hole punching from our side.

@@ -12,7 +12,7 @@ sudo rm -f /etc/wireguard/wg0.conf
 export IP_ON_PRIMARY="192.168.166.$((2 + $1))"
 
 export PRIVATE_KEY="$(wg genkey)"
-echo "$PRIVATE_KEY" | wg pubkey | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}PubKey.txt" -pass env:ENCRYPTION_KEY
+PUBLIC_KEY="$(echo $PRIVATE_KEY | wg pubkey)"
 
 sudo touch /etc/wireguard/wg0.conf
 sudo chmod 600 /etc/wireguard/wg0.conf
@@ -38,4 +38,4 @@ OUTPORT=$(echo "$STUN_OUTPUT" | awk '/MappedAddress/ {print $3; exit}' | cut -d 
 
 # Start hole punching to keep the mapping active
 sudo nping -v-2 --udp --ttl 4 --no-capture --source-port $LOCAL_PORT --count 60 --delay 10s --dest-port 1024 3.3.3.3 &
-echo $IP:$OUTPORT:$LOCAL_PORT | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}IP.txt" -pass env:ENCRYPTION_KEY
+echo $IP:$OUTPORT:$PUBLIC_KEY | openssl enc -aes-256-cbc -pbkdf2 -iter 20000 -out "Auxiliary${1}Data.txt" -pass env:ENCRYPTION_KEY

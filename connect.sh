@@ -44,17 +44,14 @@ done
 
 fetch_json
 
-PUBKEY_ARTIFACT_ID=$(get_artifact_id "PrimaryPubKey")
-fetch_artifact "$PUBKEY_ARTIFACT_ID" "primarypubkey.zip"
-unzip primarypubkey.zip
-PRIMARY_PUBLIC_KEY="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in PrimaryPubKey.txt -pass env:ENCRYPTION_KEY)"
+PRIMARY_DATA_ARTIFACT_ID=$(get_artifact_id "PrimaryData")
+fetch_artifact "$PRIMARY_DATA_ARTIFACT_ID" "primarydata.zip"
+unzip primarydata.zip
+PRIMARY_DATA="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in PrimaryData.txt -pass env:ENCRYPTION_KEY)"
 
-IP_ARTIFACT_ID=$(get_artifact_id "PrimaryIP")
-fetch_artifact "$IP_ARTIFACT_ID" "primaryip.zip"
-unzip primaryip.zip
-IPINFO="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in PrimaryIP.txt -pass env:ENCRYPTION_KEY)"
-IP=$(echo "$IPINFO" | cut -d ':' -f1)
-PORT=$(echo "$IPINFO" | cut -d ':' -f2)
+PRIMARY_PUBLIC_KEY=$(echo "$PRIMARY_DATA" | cut -d ':' -f3)
+IP=$(echo "$PRIMARY_DATA" | cut -d ':' -f1)
+PORT=$(echo "$PRIMARY_DATA" | cut -d ':' -f2)
 sudo IP="$IP" perl -pe 's/PRIMARY_IP/$ENV{IP}/' -i /etc/wireguard/wg0.conf
 sudo PORT="$PORT" perl -pe 's/PRIMARY_EXTERNAL_PORT/$ENV{PORT}/' -i /etc/wireguard/wg0.conf
 sudo PRIMARY_PUBLIC_KEY="$PRIMARY_PUBLIC_KEY" perl -pe 's/PRIMARY_PUBLIC_KEY/$ENV{PRIMARY_PUBLIC_KEY}/' -i /etc/wireguard/wg0.conf

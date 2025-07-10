@@ -35,16 +35,11 @@ jobs:
         run: ./free_storage.sh &
       - name: Initialize services
         run: ./start_primary_services.sh
-      - name: Publicize public key
+      - name: Publish connection details
         uses: actions/upload-artifact@v4
         with:
-          name: PrimaryPubKey
-          path: PrimaryPubKey.txt
-      - name: Advertise public IP address
-        uses: actions/upload-artifact@v4
-        with:
-          name: PrimaryIP
-          path: PrimaryIP.txt
+          name: PrimaryData
+          path: PrimaryData.txt
       - name: Wait for auxiliary runners
         run: ./sync_pause.sh ${{ inputs.auxiliary_count }}
       - name: Connect with auxiliary runners

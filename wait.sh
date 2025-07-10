@@ -10,10 +10,10 @@ sudo rm -f /etc/wireguard/wg0.conf
 
 # Generate peer entries.
 for i in $(seq 0 $(($1 - 1))); do
-  PUBKEY_ARTIFACT_ID=$(get_artifact_id "Auxiliary${i}PubKey")
-  fetch_artifact "$PUBKEY_ARTIFACT_ID" "auxpubkey.zip"
-  unzip auxpubkey.zip
-  export PUBLIC_KEY="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in Auxiliary${i}PubKey.txt -pass env:ENCRYPTION_KEY)"
+  ARTIFACT_ID=$(get_artifact_id "Auxiliary${i}Data")
+  fetch_artifact "$ARTIFACT_ID" "auxdata.zip"
+  unzip auxdata.zip
+  export PUBLIC_KEY="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in Auxiliary${i}Data.txt -pass env:ENCRYPTION_KEY | cut -d ':' -f3)"
   cat << EOF >> wg0-primary.conf
 [Peer]
 PublicKey = $PUBLIC_KEY
@@ -35,11 +35,7 @@ for i in $(seq 0 $(($1 - 1))); do
   recheck_connections
   OLD_CONNECTIONS=$CONNECTIONS
 
-  IP_ARTIFACT_ID=$(get_artifact_id "Auxiliary${i}IP")
-  fetch_artifact "$IP_ARTIFACT_ID" "auxip.zip"
-  unzip auxip.zip
-
-  IPINFO="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in Auxiliary${i}IP.txt -pass env:ENCRYPTION_KEY)"
+  IPINFO="$(openssl enc -d -aes-256-cbc -pbkdf2 -iter 20000 -in Auxiliary${i}Data.txt -pass env:ENCRYPTION_KEY | cut -d ':' -f1,2)"
   IP=$(echo $IPINFO | cut -d ':' -f1)
   PORT=$(echo $IPINFO | cut -d ':' -f2)
 

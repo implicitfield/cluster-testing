@@ -1,0 +1,130 @@
+--- a/PKGBUILD
++++ b/PKGBUILD
+@@ -9,14 +9,14 @@
+ # Contributor: Daniel J Griffiths <ghost1227@archlinux.us>
+ 
+ pkgname=ungoogled-chromium
+-pkgver=138.0.7204.96
++pkgver=138.0.7204.157
+ pkgrel=1
+ _launcher_ver=8
+ _manual_clone=0
+ _system_clang=1
+ # ungoogled chromium variables
+ _uc_usr=ungoogled-software
+-_uc_ver=138.0.7204.96-1
++_uc_ver=138.0.7204.157-1
+ pkgdesc="A lightweight approach to removing Google web service dependency"
+ arch=('x86_64')
+ url="https://github.com/ungoogled-software/ungoogled-chromium"
+@@ -35,9 +35,8 @@ optdepends=('pipewire: WebRTC desktop sharing under Wayland'
+             'upower: Battery Status API support')
+ provides=("chromium=$pkgver" "chromedriver=$pkgver")
+ conflicts=('chromium' 'chromedriver')
+-options=('!lto') # Chromium adds its own flags for ThinLTO
++options=('!lto' '!debug') # Chromium adds its own flags for ThinLTO
+ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chromium-$pkgver-lite.tar.xz
+-        $pkgname-$_uc_ver.tar.gz::https://github.com/$_uc_usr/ungoogled-chromium/archive/$_uc_ver.tar.gz
+         https://github.com/foutrelis/chromium-launcher/archive/v$_launcher_ver/chromium-launcher-$_launcher_ver.tar.gz
+         compiler-rt-adjust-paths.patch
+         increase-fortify-level.patch
+@@ -48,8 +47,7 @@ source=(https://commondatastorage.googleapis.com/chromium-browser-official/chrom
+         0001-ozone-wayland-implement-text_input_manager-fixes.patch
+         0001-vaapi-flag-ozone-wayland.patch
+         chromium-138-nodejs-version-check.patch)
+-sha256sums=('d91365d78215faf17654288b606eda0ae9c4c7dc44f77b8f9a49851d9c1fc648'
+-            '351bce1f668736ed2e56899c79bfda2ca3a9a0ed1ee24f5f6de9fdbc99d1857a'
++sha256sums=('21867c081656dacf2958c6179a54e3462a5ea2eb0a0b2c3443e13c0b99aca5e4'
+             '213e50f48b67feb4441078d50b0fd431df34323be15be97c55302d3fdac4483a'
+             'bafb04282db0ae19d4e42e022fdccfafb424f18406e5b893475dc18bf4bd8f9e'
+             'd634d2ce1fc63da7ac41f432b1e84c59b7cceabf19d510848a7cff40c8025342'
+@@ -130,6 +128,24 @@ prepare() {
+   # Increase _FORTIFY_SOURCE level to match Arch's default flags
+   patch -Np1 -i ../increase-fortify-level.patch
+ 
++  cat << 'EOF' > disable-wgnu-line-marker.patch
++--- a/build/config/compiler/BUILD.gn
+++++ b/build/config/compiler/BUILD.gn
++@@ -2331,6 +2331,10 @@ config("chromium_code") {
++         # Warn on GNU extensions.
++         "-Wgnu",
++ 
+++        # Ignore -Wgnu-line-marker, because clang's preprocessor itself
+++        # generates these, and proceeeds to warn about its own output.
+++        "-Wno-gnu-line-marker",
+++
++         # TODO(crbug.com/357081796): Try to enable these.
++         "-Wno-gnu-anonymous-struct",
++         "-Wno-gnu-conditional-omitted-operand",
++EOF
++
++  patch -p1 < disable-wgnu-line-marker.patch
++
+   # Fixes for building with libstdc++ instead of libc++
+ 
+   if (( !_system_clang )); then
+@@ -142,7 +158,12 @@ prepare() {
+   fi
+ 
+   # Ungoogled Chromium changes
+-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
++  git clone https://github.com/ungoogled-software/ungoogled-chromium.git
++  cd ungoogled-chromium
++  git fetch origin pull/3391/head
++  git checkout FETCH_HEAD
++  cd ..
++  _ungoogled_repo="$PWD/ungoogled-chromium"
+   _utils="${_ungoogled_repo}/utils"
+   msg2 'Pruning binaries'
+   python "$_utils/prune_binaries.py" ./ "$_ungoogled_repo/pruning.list" || echo "some errors"
+@@ -192,10 +213,19 @@ build() {
+     export NM=$_clang_path/llvm-nm
+   fi
+ 
++  export DISTCC_HOSTS="localhost/4"
++  for i in $(seq 1 11); do
++    export DISTCC_HOSTS="$DISTCC_HOSTS 192.168.166.$(($i + 1))/5"
++  done
++
+   local _flags=(
++    cc_wrapper = \"env DISTCC_HOSTS=\'$DISTCC_HOSTS\' distcc\"
+     'custom_toolchain="//build/toolchain/linux/unbundle:default"'
+     'host_toolchain="//build/toolchain/linux/unbundle:default"'
+     'is_official_build=true' # implies is_cfi=true on x86_64
++    'is_cfi=false'
++    'clang_use_default_sample_profile=false'
++    'clang_warning_suppression_file=""'
+     'symbol_level=0' # sufficient for backtraces on x86(_64)
+     'treat_warnings_as_errors=false'
+     'fatal_linker_warnings=false'
+@@ -222,7 +252,7 @@ build() {
+   fi
+ 
+   # Append ungoogled chromium flags to _flags array
+-  _ungoogled_repo="$srcdir/$pkgname-$_uc_ver"
++  _ungoogled_repo="$PWD/ungoogled-chromium"
+   readarray -t -O ${#_flags[@]} _flags < "${_ungoogled_repo}/flags.gn"
+ 
+   if (( _system_clang )); then
+@@ -230,10 +260,10 @@ build() {
+       clang --version | grep -m1 version | sed 's/.* \([0-9]\+\).*/\1/')
+ 
+     _flags+=(
+-      'clang_base_path="/usr"'
++      'clang_base_path="/usr/local"'
+       'clang_use_chrome_plugins=false'
+       "clang_version=\"$_clang_version\""
+-      #'chrome_pgo_phase=0' # needs newer clang to read the bundled PGO profile
++      'chrome_pgo_phase=0'
+     )
+ 
+     # Allow the use of nightly features with stable Rust compiler
+@@ -277,7 +307,7 @@ build() {
+   msg2 'Configuring Chromium'
+   gn gen out/Release --args="${_flags[*]}"
+   msg2 'Building Chromium'
+-  ninja -C out/Release chrome chrome_sandbox chromedriver
++  ninja -j96 -C out/Release chrome chrome_sandbox chromedriver
+ }
+ 
+ package() {

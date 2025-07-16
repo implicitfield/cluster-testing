@@ -1,11 +1,8 @@
-name: Build, package and release clang+llvm
+name: Build, package and release ungoogled-chromium
 
 on:
   workflow_call:
     inputs:
-      arch:
-        required: true
-        type: string
       os:
         required: true
         type: string
@@ -27,8 +24,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         name: Clone repository
-      - name: Disable Spotlight
-        run: sudo mdutil -a -i off
       - name: Install dependencies
         run: ./install_primary_dependencies.sh
       - name: Start freeing up storage
@@ -50,4 +45,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ungoogled-chromium
-          path: ungoogled-chromium.dmg
+          path: ungoogled-chromium.pkg.tar.zst

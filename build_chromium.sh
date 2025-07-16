@@ -2,52 +2,50 @@
 
 set -euo pipefail
 
-OUTPUT_PATH="$PWD/ungoogled-chromium.dmg"
+curl -O 'https://mirror.rackspace.com/archlinux/iso/2025.07.01/archlinux-bootstrap-x86_64.tar.zst'
+if [[ "$(b2sum archlinux-bootstrap-x86_64.tar.zst | cut -d ' ' -f1)" != "f73754445f75ed2bb4831a35e4312602cf7223058ca4708ea0755619c8e446c535bac32159507f209d52a98330251a506136a9b29d0b5d94679c2c933b0fa046" ]]; then
+  echo "Checksum mismatch"
+  exit 1
+fi
+sudo tar -xf archlinux-bootstrap-x86_64.tar.zst --numeric-owner
+echo 'Server = https://mirror.rackspace.com/archlinux/$repo/os/$arch' | sudo tee root.x86_64/etc/pacman.d/mirrorlist
 
-git clone https://github.com/ungoogled-software/ungoogled-chromium-macos.git
-cd ungoogled-chromium-macos
+sudo mount --bind $PWD/root.x86_64 $PWD/root.x86_64
 
-git submodule init
-git submodule update
-
-cd ungoogled-chromium
-git fetch origin pull/3384/head
-git checkout FETCH_HEAD
-cd ..
-
-cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
-cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
-echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
-echo "ungoogled-chromium/macos/disable-wgnu-line-marker.patch" >> patches/series
-
-export DISTCC_HOSTS="localhost/4"
-for i in $(seq 1 $1); do
-  export DISTCC_HOSTS="$DISTCC_HOSTS 192.168.166.$(($i + 1))/5"
-done
-
-gsed 's/symbol_level=1/symbol_level=0/' -i flags.macos.gn
-
-cat << EOF >> flags.macos.gn
-clang_base_path = "/usr/local"
-cc_wrapper = "env DISTCC_HOSTS='$DISTCC_HOSTS' distcc"
-enable_stripping = false
-enable_dsyms = false
-swift_whole_module_optimization = 0
-use_thin_lto = false
+cat << 'EOF' | sudo tee root.x86_64/root/create-user.sh
+#!/bin/bash
+set -euo pipefail
+pacman-key --init
+pacman-key --populate
+pacman -Syu --noconfirm
+pacman -S --noconfirm base-devel distcc gtk3 nss alsa-lib xdg-utils libxss libcups libgcrypt ttf-liberation systemd dbus libpulse pciutils libva libffi desktop-file-utils hicolor-icon-theme python gn ninja clang lld gperf nodejs pipewire rust rust-bindgen qt5-base qt6-base java-runtime-headless git libwebp minizip libxslt
+useradd -m build
+chown -R build /home/build
+echo 'MAKEFLAGS="-j96"' >> /etc/makepkg.conf
+ln -s /usr/bin/clang /usr/local/bin/clang
+ln -s /usr/bin/clang++ /usr/local/bin/clang++
+mkdir -p /usr/local/lib
+ln -s /usr/lib/clang /usr/local/lib/clang
 EOF
+sudo chmod +x root.x86_64/root/create-user.sh
+sudo arch-chroot $PWD/root.x86_64 "/root/create-user.sh"
 
-JOBS=$(((4 + ($1 * 5)) * 2))
-gsed "s/ninja/ninja -j$JOBS/" -i build.sh
-gsed '/sign_and_package_app/d' -i build.sh
-cat << EOF >> build.sh
-xattr -cs out/Default/Chromium.app
-codesign --force --deep --sign - out/Default/Chromium.app
-chrome/installer/mac/pkg-dmg \
-  --sourcefile --source out/Default/Chromium.app \
-  --target "$OUTPUT_PATH" \
-  --volname Chromium --symlink /Applications:/Applications \
-  --format UDBZ --verbosity 2
+sudo cp pkgbuild.patch root.x86_64/home/build
+sudo chmod 777 root.x86_64/home/build/pkgbuild.patch
+
+cat << 'EOF' | sudo tee root.x86_64/home/build/build.sh
+#!/bin/bash
+set -euo pipefail
+cd
+git clone https://github.com/ungoogled-software/ungoogled-chromium-archlinux.git
+cd ungoogled-chromium-archlinux
+patch -p1 < ../pkgbuild.patch
+makepkg --skippgpcheck
 EOF
+sudo chmod +x root.x86_64/home/build/build.sh
+sudo arch-chroot $PWD/root.x86_64 /usr/bin/su -c /home/build/build.sh - build
 
-export SDKROOT="$(xcrun --show-sdk-path)"
-./build.sh -d arm64
+# This is really annoying, but I really have no idea where this thing hides the package.
+# It's probably in whatever PKGDEST is set to, but at this point, who even knows?
+sudo find root.x86_64/home/build -name 'ungoogled-chromium-138*pkg.tar.zst' -exec sh -c "echo {} && cp {} ungoogled-chromium.pkg.tar.zst" \;
+sudo chown $(whoami) ungoogled-chromium.pkg.tar.zst

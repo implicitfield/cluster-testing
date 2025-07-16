@@ -1,4 +1,4 @@
-name: Build, package and release clang+llvm
+name: Build, package and release ungoogled-chromium
 on:
   push:
     branches: [ "main" ]
@@ -25,6 +25,5 @@ jobs:
     uses: ./.github/workflows/primary.yml
     secrets: inherit
     with:
-      arch: "arm64"
-      os:  "macos-15"
+      os:  "ubuntu-24.04"
       auxiliary_count: "11"

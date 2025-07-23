@@ -1,4 +1,4 @@
-name: Build, package and release clang+llvm
+name: Build, package and release ungoogled-chromium
 
 on:
   workflow_call:

@@ -11,7 +11,7 @@ git submodule init
 git submodule update
 
 cd ungoogled-chromium
-git fetch origin pull/3384/head
+git fetch origin pull/3401/head
 git checkout FETCH_HEAD
 cd ..
 

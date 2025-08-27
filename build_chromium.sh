@@ -20,7 +20,7 @@ cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
 echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
 echo "ungoogled-chromium/macos/disable-wgnu-line-marker.patch" >> patches/series
 
-export DISTCC_HOSTS="localhost/4"
+export DISTCC_HOSTS="localhost/3 --localslots_cpp/$(($1 * 6))"
 for i in $(seq 1 $1); do
   export DISTCC_HOSTS="$DISTCC_HOSTS 192.168.166.$(($i + 1))/5"
 done

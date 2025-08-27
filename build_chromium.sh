@@ -11,8 +11,7 @@ git submodule init
 git submodule update
 
 cd ungoogled-chromium
-git fetch origin pull/3401/head
-git checkout FETCH_HEAD
+git pull origin master
 cd ..
 
 cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos

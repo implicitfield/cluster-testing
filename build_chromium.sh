@@ -7,17 +7,25 @@ OUTPUT_PATH="$PWD/ungoogled-chromium.dmg"
 git clone https://github.com/ungoogled-software/ungoogled-chromium-macos.git
 cd ungoogled-chromium-macos
 
+git fetch origin pull/279/head
+git checkout FETCH_HEAD
+
 git submodule init
 git submodule update
 
 cd ungoogled-chromium
-git pull origin master
+git fetch origin pull/3449/head
+git checkout FETCH_HEAD
 cd ..
+
+patch -p1 < ../remove-llvm-download.patch
 
 cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
 cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
+cp ../bindgen-disable-static.patch patches/ungoogled-chromium/macos
 echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
 echo "ungoogled-chromium/macos/disable-wgnu-line-marker.patch" >> patches/series
+echo "ungoogled-chromium/macos/bindgen-disable-static.patch" >> patches/series
 
 export DISTCC_HOSTS="localhost/3 --localslots_cpp/$(($1 * 6))"
 for i in $(seq 1 $1); do

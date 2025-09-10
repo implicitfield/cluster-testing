@@ -7,14 +7,11 @@ OUTPUT_PATH="$PWD/ungoogled-chromium.dmg"
 git clone https://github.com/ungoogled-software/ungoogled-chromium-macos.git
 cd ungoogled-chromium-macos
 
-git fetch origin pull/279/head
-git checkout FETCH_HEAD
-
 git submodule init
 git submodule update
 
 cd ungoogled-chromium
-git fetch origin pull/3449/head
+git fetch origin pull/3464/head
 git checkout FETCH_HEAD
 cd ..
 

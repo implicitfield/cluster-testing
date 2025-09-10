@@ -54,4 +54,4 @@ chrome/installer/mac/pkg-dmg \
 EOF
 
 export SDKROOT="$(xcrun --show-sdk-path)"
-./build.sh -d arm64
+PATH=/usr/bin:$PATH ./build.sh -d arm64

@@ -4,7 +4,7 @@
      _llvm_dir="$_src_dir/third_party/llvm-build/Release+Asserts"
      _llvm_bin_dir="$_llvm_dir/bin"
  
-+    tar -x -C "$_llvm_dir" --strip-components=1 -f "$_root_dir/../clang+llvm-21.1.0-arm64-apple-darwin21.0.tar.xz"
++    tar -x -C "$_llvm_dir" --strip-components=1 -f "$_root_dir/../clang+llvm-21.1.3-arm64-apple-darwin21.0.tar.xz"
 +
      ln -s "$_llvm_bin_dir/llvm-install-name-tool" "$_llvm_bin_dir/install_name_tool"
  fi

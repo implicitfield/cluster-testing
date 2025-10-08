@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LLVM_VERSION=21.1.0
+LLVM_VERSION=21.1.3
 
 brew install wireguard-go wireguard-tools nmap distcc gnu-sed coreutils
 
@@ -17,7 +17,7 @@ sudo cp client /usr/local/bin/stun
 cd ..
 # This should match the version that the auxiliary servers use.
 curl -OL https://github.com/implicitfield/llvm-macos-buildbot/releases/download/$LLVM_VERSION-arm64/clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz
-if [[ $(shasum -a 512 clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz) != "da21c5f7d77687136f3e198be844a07cf60df7d1f39d1ae4a3e4881eeb1c20831ede87c3a4a781d822b167307170af3d1236a1b9eb910eb0ebbd425a9d0eb8ae  clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz" ]]; then
+if [[ $(shasum -a 512 clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz) != "c27fd742cfb5156c948cb4fa1b1c67c5800b17439688b78178c6d70d5cdba55b01bcfaaf93cbcf05f9b2bcb4fa78f96f6d16e2e692e9f209e9b8b7865ca5f568  clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz" ]]; then
   exit 1
 fi
 tar -xf clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz

@@ -11,7 +11,7 @@ git submodule init
 git submodule update
 
 cd ungoogled-chromium
-git fetch origin pull/3499/head
+git fetch origin pull/3542/head
 git checkout FETCH_HEAD
 cd ..
 
@@ -21,9 +21,9 @@ gsed -e '/Pre-built LLVM/,+8d' -i downloads-x86-64.ini
 patch -p1 < ../remove-llvm-download.patch
 
 cp ../preserve-absolute-path-on-apple.patch patches/ungoogled-chromium/macos
-cp ../disable-wgnu-line-marker.patch patches/ungoogled-chromium/macos
+cp ../disable-warning-suppression-for-distcc.patch patches/ungoogled-chromium/macos
 echo "ungoogled-chromium/macos/preserve-absolute-path-on-apple.patch" >> patches/series
-echo "ungoogled-chromium/macos/disable-wgnu-line-marker.patch" >> patches/series
+echo "ungoogled-chromium/macos/disable-warning-suppression-for-distcc.patch" >> patches/series
 
 export DISTCC_HOSTS="localhost/3 --localslots_cpp/$(($1 * 6))"
 for i in $(seq 1 $1); do
@@ -34,7 +34,7 @@ gsed 's/symbol_level=1/symbol_level=0/' -i flags.macos.gn
 
 cat << EOF >> flags.macos.gn
 clang_base_path = "/usr/local"
-cc_wrapper = "env DISTCC_HOSTS='$DISTCC_HOSTS' distcc"
+cc_wrapper = "distcc"
 enable_stripping = false
 enable_dsyms = false
 swift_whole_module_optimization = 0

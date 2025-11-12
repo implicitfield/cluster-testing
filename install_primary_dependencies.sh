@@ -1,6 +1,6 @@
 #!/bin/bash
 
-LLVM_VERSION=21.1.3
+LLVM_VERSION=21.1.5
 
 brew install wireguard-go wireguard-tools nmap distcc gnu-sed coreutils
 
@@ -17,10 +17,10 @@ sudo cp client /usr/local/bin/stun
 cd ..
 # This should match the version that the auxiliary servers use.
 curl -OL https://github.com/implicitfield/llvm-macos-buildbot/releases/download/$LLVM_VERSION-arm64/clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz
-if [[ $(shasum -a 512 clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz) != "c27fd742cfb5156c948cb4fa1b1c67c5800b17439688b78178c6d70d5cdba55b01bcfaaf93cbcf05f9b2bcb4fa78f96f6d16e2e692e9f209e9b8b7865ca5f568  clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz" ]]; then
+if [[ $(shasum -a 512 clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz) != "5914bfe5b2a6092d9f0053d65d60dfe245da86a8247a3b6ea7a1adfc388d95ec2018bd8ba927d9cf793fa296b429333b78f318b9e43913bf63eaf36f338e57e6  clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz" ]]; then
   exit 1
 fi
 tar -xf clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0.tar.xz
 sudo cp -r clang+llvm-$LLVM_VERSION-arm64-apple-darwin21.0/* /usr/local/
 sudo ln -s $(which clang++) $(which clang++)-21
-sudo xcode-select --switch /Applications/Xcode_16.4.app
+sudo xcode-select --switch /Applications/Xcode_26.0.app

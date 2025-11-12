@@ -1,0 +1,11 @@
+--- a/build/config/compiler/BUILD.gn
++++ b/build/config/compiler/BUILD.gn
+@@ -359,7 +359,7 @@ config("compiler") {
+   # cannot locate the file during target compilation. Therefore, we are
+   # disabling the clang_warning_suppression configuration for ICECC builds for
+   # now.
+-  if (cc_wrapper == "icecc") {
++  if (cc_wrapper == "icecc" || cc_wrapper == "distcc") {
+     configs -= [ ":clang_warning_suppression" ]
+   }
+ 
